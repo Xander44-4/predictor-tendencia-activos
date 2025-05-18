@@ -1,2 +1,2 @@
 # PredictorTendenciaActivos
-Es un backend encargado de predecir el valor de un activo a futuro partiendo de una serie de datos con arquitectura MVC. .
+Es un backend encargado de predecir el valor de un activo a futuro partiendo de una serie de datos con arquitectura MVC. 
