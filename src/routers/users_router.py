@@ -1,14 +1,19 @@
 from fastapi import APIRouter
-
+from src.controllers.user_controller import UserController
+from src.models.user_model import User
+from src.dto.login_dto import UserDto
+from bson import ObjectId
 users_router = APIRouter()
 
-@users_router.post("/login")
-def login(email : str, password_hash : str):
-    return f"Login successful! Welcome {email} "
-@users_router.post("/signup")
-def signup(username : str, age : int,email : str ,password_hash : str):
-    return f"Sign up successful! Welcome {username} "
+@users_router.post("/login", tags=["Users"])
+def login(login_data: UserDto):
+    return UserController.login(login_data)
+@users_router.post("/signup", tags=["Users"])
+def signup(user : User):
+    return UserController.create_user(user)
 
-@users_router.get("/get/users")
+@users_router.get("/get/users", tags=["Users"])
 def get_users():
-    return "lista de usuarios"
+    return UserController.get_users()
+
+
