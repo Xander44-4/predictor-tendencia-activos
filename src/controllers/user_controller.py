@@ -13,8 +13,6 @@ class UserController:
         try:
           new_user = dict(user)
           del new_user['id']
-
-
           use_id = db.users.insert_one(new_user).inserted_id
           db.users.find_one({'_id': use_id})
           print(user_entity(new_user))
@@ -39,8 +37,12 @@ class UserController:
         pass
 
     @staticmethod
-    def login(login_data : UserDto) -> UserTokenDto:
-        user_model = db.users.find_one({"email" : login_data.email})
-        user_model["_id"] = str(user_model["_id"])
-        user_token = UserTokenDto(user_model,'logica JWT')
-        return user_token
+    def login(login_data : UserDto) -> UserTokenDto | None:
+
+
+            user_model = db.users.find_one({"email" : login_data.email , "password_hashed" : login_data.password_hashed})
+            if not user_model :
+                return None
+            user_model["_id"] = str(user_model["_id"])
+            user_token = UserTokenDto(user_model,'logica JWT')
+            return user_token
