@@ -1,9 +1,9 @@
-def user_entity(item) -> dict:
+def user_entity(entity) -> dict:
     return {
-        "id" : str(item["_id"]),
-        "username": item["username"],
-        "email": item["email"],
-        "password_hashed": item["password_hashed"],
+        "id" : str(entity["_id"]),
+        "username": entity["username"],
+        "email": entity["email"],
+        "password_hashed": entity["password_hashed"],
     }
 def users_entity(entity) -> list:
-   return [user_entity(item) for item in entity]
+   return [user_entity(entity) for entity in entity]

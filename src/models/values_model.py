@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class ValuesModel(BaseModel):
-    value: int
+    value: float
     datetime : datetime
 
 

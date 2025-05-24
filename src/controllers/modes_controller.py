@@ -1,14 +1,34 @@
-from datetime import datetime, timedelta
+from typing import List
 from src.models.mode_model import Mode
 from src.dto.sma_dto import SMADto
 from src.dto.rl_dto import RLDto
+from src.dto.roc_dto import ROCdto
 from src.models.values_model import ValuesModel
+from src.schemas.mode_shema import mode_entity
+from src.core.mongo_db import db
+
+
+def to_db(mode_type : int, user_id : str, inputs : list ,answer_type ,mode : Mode) -> str:
+    try:
+        mode.mode_type = mode_type
+        mode.userId = user_id
+        mode.inputs = [ValuesModel(**item) if not isinstance(item, ValuesModel) else item for item in inputs]
+        mode.answer_mode = answer_type
+
+        mode_to_db = mode.model_dump(exclude={"id"})
+        db.modes.insert_one(mode_to_db)
+
+    except Exception as e:
+        print('Error sending the information to DB',e)
+
+
+    return 'añadido correctamente'
 
 class ModeController:
 
 
     @staticmethod
-    def calculate_sma(mode: Mode) -> SMADto:
+    def calculate_sma(mode: Mode, user_id : str) -> SMADto:
         lista = mode.inputs
 
         lista_amount : int = len(lista)
@@ -20,20 +40,28 @@ class ModeController:
             total_of_sum_values += value.value
 
         for i in range(15, 20):
-            print(lista[i].value)
+
             last_five_digits += lista[i].value
         #high and low SMA
         high_sma =   total_of_sum_values / lista_amount
         low_sma = last_five_digits / to_promedy_low_sma
+
         if low_sma > high_sma:
             msg = 'alcista'
         if low_sma < high_sma:
             msg = 'bajista'
-        response = SMADto(high_sma,low_sma,msg)
+
+        response = SMADto(
+            high_sma=high_sma,
+            low_sma=low_sma,
+            msg=msg
+        )
+        mode.answer_mode = response
+        to_db(1,user_id,lista,response,mode)
         return response
 
     @staticmethod
-    def calculate_rl(mode : Mode) -> RLDto:
+    def calculate_rl(mode : Mode, user_id : str) -> RLDto:
         lista = mode.inputs
         msg = ''
         n = len(lista)
@@ -70,7 +98,7 @@ class ModeController:
         # y - m * x
         formula_of_b = y_to_pendient - (m * x_to_pendient)
         b = formula_of_b
-        # formula: y = mx + b
+
 
         new_x = n+1 #21
         #y                mx     +   b
@@ -85,8 +113,29 @@ class ModeController:
 
 
         response = RLDto(future_value, msg)
+        to_db(2,user_id,lista,response,mode)
+
         return response
 
     @staticmethod
-    def calculate_roc():
-        pass
+    def calculate_roc(mode: Mode, user_id : str,period: int = 5, ) -> List[ROCdto]:
+        lista = mode.inputs
+        list_roc: List[ROCdto] = []
+
+        for i in range(len(lista)):
+            current_value = lista[i].value
+            if i < period:
+                roc = "n/a"
+            else:
+                previous_value = lista[i - period].value
+                if previous_value != 0:
+                    roc = round(((current_value / previous_value) - 1) * 100, 2)
+                else:
+                    roc = "n/a"
+
+            dto = ROCdto(t=i, price=current_value, roc=roc)
+            list_roc.append(dto)
+
+        to_db(3, user_id, lista, list_roc, mode)
+        return list_roc
+

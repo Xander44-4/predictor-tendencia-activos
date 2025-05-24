@@ -1,6 +1,8 @@
 from pydantic import BaseModel
+from typing import Literal
 
 class RLDto(BaseModel):
+    type: Literal["rl"] = "rl"
     future_value: float
     msg: str
 
