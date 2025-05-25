@@ -1,3 +1,4 @@
+from datetime import datetime, date
 from typing import List
 from src.models.mode_model import Mode
 from src.dto.sma_dto import SMADto
@@ -8,7 +9,7 @@ from src.schemas.mode_shema import mode_entity
 from src.core.mongo_db import db
 
 
-def to_db(mode_type : int, user_id : str, inputs : list ,answer_type ,mode : Mode) -> str:
+def to_db(mode_type: int, user_id: str, inputs: list, answer_type, mode: Mode) -> str:
     try:
         mode.mode_type = mode_type
         mode.userId = user_id
@@ -16,11 +17,16 @@ def to_db(mode_type : int, user_id : str, inputs : list ,answer_type ,mode : Mod
         mode.answer_mode = answer_type
 
         mode_to_db = mode.model_dump(exclude={"id"})
+
+        # Convertir datetime.date a string 'YYYY-MM-DD' para MongoDB
+        for input_item in mode_to_db["inputs"]:
+            if isinstance(input_item["datetime"], date):
+                input_item["datetime"] = input_item["datetime"].isoformat()
+
         db.modes.insert_one(mode_to_db)
 
     except Exception as e:
-        print('Error sending the information to DB',e)
-
+        print('Error sending the information to DB', e)
 
     return 'añadido correctamente'
 
