@@ -22,7 +22,7 @@ class Mode(BaseModel):
     id : Optional[str] = None
     mode_type: int # 1-SMA 2-RL 3-ROC
     userId: str
-    inputs : List[ValuesModel] = Field(..., min_length=20)
+    inputs : List[ValuesModel] = Field(..., min_length=5)
     answer_mode: Optional[AnswerUnion] = None
 
 
