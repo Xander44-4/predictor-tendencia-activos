@@ -6,8 +6,7 @@ Un sistema backend robusto diseñado para predecir el valor futuro de activos fi
 
 - **Predicción de Activos**: Algoritmos avanzados para predecir valores futuros de activos financieros
 - **Arquitectura MVC**: Estructura modular y escalable para fácil mantenimiento
-- **API RESTful**: Endpoints bien documentados para integración con aplicaciones frontend
-- **Análisis de Series Temporales**: Procesamiento inteligente de datos históricos
+- **API RESTful**: Endpoints bien estructurados para integración con aplicaciones frontend
 - **Validación de Datos**: Sistema robusto de validación y sanitización de entrada
 
 ## 🛠️ Tecnologías Utilizadas
